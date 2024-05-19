@@ -1,6 +1,7 @@
 import time 
 import datetime
 from datetime import date
+from holidayMethods import csvVersion2Update
 #Gets number of flights given a csv file to read, a start time [incluive], an end time [inclusive], and the date.
 #date MUST be in 'yyyy-mm-dd' format, if you want to read data from today, leave date empty!
 #insert time values as normal in string format.

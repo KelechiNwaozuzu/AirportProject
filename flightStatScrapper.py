@@ -4,10 +4,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from holidayMethods import holidayPopulate
+from DateAnalyzer import dateAnalyzer
 import array as arr
 import time 
 from datetime import date
 import schedule
+
 
 
 
@@ -107,14 +110,16 @@ def mainScraper():
    
 def createNewCSV(fname):
     file = open(fname, "w")
-    file.write("Date, Departure Time, Arrival Time, Flight Info, Destination, Airline Info\n")
+    file.write("Date, Month, Day Of Week, Departure Time, Arrival Time, Flight Info, Destination, Airline Info, Holiday\n")
     file.close()
 
 def addDataToCSV(fname, dataToAdd):
+    dateAnalyzeT = dateAnalyzer(str(date.today()), '05:02')
+    HolidayStatus = holidayPopulate(str(date.today()))
     dataToAdd.sort()
     file = open(fname, "a")
     for element in dataToAdd:
-        line = '{},{},{},{},{},{}\n'.format(str(date.today()), str(element[0]), str(element[1]), str(element[2]), str(element[3]), str(element[4]))
+        line = '{},{},{},{},{},{},{},{}, {}\n'.format(str(date.today()), str(dateAnalyzeT[1]), str(dateAnalyzeT[0]), str(element[0]), str(element[1]), str(element[2]), str(element[3]), str(element[4]), str(HolidayStatus[0]))
         file.write(line)
     file.close()
 
@@ -130,8 +135,8 @@ mainScraper()
 time18to24()
 mainScraper()
 
-#createNewCSV("data.csv")
-addDataToCSV("data.csv", departureData)
+#createNewCSV("data1.csv")
+addDataToCSV("data2.csv", departureData)
 
 time.sleep(2)
 driver.quit()

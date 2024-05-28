@@ -61,8 +61,6 @@ def updateExistingCSV(fname):
 # This method uses the time module to automatically run and add a row of data to an existing
 # CSV file every 15 minutes, starting at 12:15 AM.
 def main():
-    createCSV('practicev1.csv')
-    updateExistingCSV('practicev1.csv')
     return
 
 main()

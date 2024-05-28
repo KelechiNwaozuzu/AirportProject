@@ -38,6 +38,7 @@ def holidayStatus(date):
     for holiday in holidayData:
         if (date == holiday['date']):
             return [1, holiday['localName']]
+    return [0, ""]
 
 
 # This method creates a new CSV file with the selected header. This should only be used once.
@@ -51,14 +52,17 @@ def createCSV(fname):
 
 
 def updateExistingCSV(fname):
+    file = open(fname, "a")
+    holidayValue = holidayStatus(str(date.today()))[0]
+    file.write('{},{},{},{},{},{},{},{},{}, {}'.format("", "", "", "", "", "", "", "", "", holidayValue,))
     return
 
 
 # This method uses the time module to automatically run and add a row of data to an existing
 # CSV file every 15 minutes, starting at 12:15 AM.
 def main():
-    #createCSV('practice.csv')
-    holidayStatus('2024-05-27')
+    createCSV('practicev1.csv')
+    updateExistingCSV('practicev1.csv')
     return
 
 main()

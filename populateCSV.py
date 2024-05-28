@@ -1,4 +1,4 @@
-# This file states the process of data collected for our model.
+# This file states the process of data collection for our model.
 
 # This method scrapes FlightStats at 12:01 AM to collect the daily flight departure information.
 # Used directly for: flight volume, and flight zoning.

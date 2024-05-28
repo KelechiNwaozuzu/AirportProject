@@ -32,6 +32,9 @@ def holidayStatus():
 # This method creates a new CSV file with the selected header. It should only be used once.
 # @param fname: the name of the file you want to create.
 def createCSV(fname):
+    file = open(fname, "w")
+    file.write("Time of Scrape, Flight Volume, Flight Zoning, Live Security Wait Time, Weather, Month, Day of Week, Airline Info, Terminal Traffic, Holiday\n")
+    file.close()
     return
 
 # This method uses the time module to automatically run and add a row of data to an existing

@@ -9,6 +9,7 @@ import requests
 import pandas as pd
 import time
 import datetime
+from datetime import timedelta
 
 
 
@@ -147,6 +148,53 @@ def flightDepartureScraper():
 def getCurrentWaitTimes():
     return
 
+def getFlightZoning():
+    current_time = datetime.datetime.now()
+    timeNow = str(current_time.strftime("%H%M"))
+
+    def getNumberOf(fname, start, end, dateInput = str(date.today())):
+        sameDateList = []
+        inRangeList = []
+        if fname == None:
+            print("File name cannot be null")
+            return 0
+        file = open(fname, "r")
+        header  = file.readline()
+        dataList = file.readlines()
+        file.close()
+        for element in dataList:
+            elementList = element.strip().split(",")
+            #invokes date filter
+            if elementList[0] == dateInput:
+                sameDateList.append(elementList)
+            #start/end filter
+        for elementList in sameDateList:
+            time = int(elementList[1].replace(":", ""))
+            startInt = int(start.replace(":", ""))
+            endInt = int(end.replace(":", ""))
+            if time >= startInt and time <= endInt:
+                inRangeList.append(elementList)     
+        if len(sameDateList) == 0:
+            print("No data present for given date! **check format in docs**")
+            return 0
+        if len(inRangeList) == 0:
+            print("No such data in given range")
+            return 0
+        return (len(inRangeList))
+    if int(timeNow) >= 300 and int(timeNow) <= 2100:
+        threeHoursAgo = (current_time - timedelta(hours=3)).strftime("%H:%M")
+        threeHoursfromNow = (current_time + timedelta(hours=3)).strftime("%H:%M")
+        return getNumberOf('todaysDepartures.csv', threeHoursAgo, threeHoursfromNow)
+    elif int(timeNow) < 300:
+        threeHoursAgo = (current_time - timedelta(hours=3)).strftime("%H:%M")
+        threeHoursfromNow = (current_time + timedelta(hours=3)).strftime("%H:%M")
+        yesterday = date.today() - timedelta(days=1)
+        return getNumberOf('yesterdaysDepartures', threeHoursAgo, '23:59', str(yesterday)) + getNumberOf('todaysDepartures.csv', '00:00', threeHoursfromNow)
+    elif int(timeNow) > 2100:
+        return getNumberOf('todaysDepartures.csv', threeHoursAgo, '23:59')
+
+
+
 # This method gets the live weather at the current time (e.g., precipitation, temperature, etc.).
 def getCurrentWeather():
     weatherCode = {
@@ -254,6 +302,8 @@ def getCurrentWeather():
     }
 
     response = requests.get(url, params=params)
+    #print(response.json())
+
     data = response.json()
 
     weather_data = {
@@ -275,6 +325,16 @@ def getMonth():
     military_time = time_obj.strftime("%H%M")
     result_tuple = (day_of_week, month, int(military_time))
     return result_tuple[1]
+
+
+def createYesterdayCSV():
+    infile = open('todaysDepartures.csv', 'r')
+    outfile = open('yesterdayDepatures.CSV', "w")
+    data = infile.read()
+    infile.close()
+    outfile.write(data)
+    outfile.close()
+    return
     
 
 # This method gets the day of the week at the time of execution.
@@ -317,7 +377,8 @@ def updateExistingCSV(fname):
     holidayValue = holidayStatus(str(date.today()))[0]
     current_time = datetime.datetime.now()
     timeNow = str(current_time.strftime("%H:%M:%S"))[0:5]
-    file.write('{}, {},{},{},{},{},{},{},{},{}\n'.format(str(date.today()), timeNow, "", "", getCurrentWeather(), getMonth(), getDayOfWeek(), "", "", holidayValue,))
+    flightZoneAmt = str(getFlightZoning())
+    file.write('{}, {},{},{},{},{},{},{},{},{}\n'.format(str(date.today()), timeNow, flightZoneAmt, "", getCurrentWeather(), getMonth(), getDayOfWeek(), "", "", holidayValue,))
     file.close()
     return
 
@@ -325,8 +386,12 @@ def updateExistingCSV(fname):
 # This method uses the time module to automatically run and add a row of data to an existing
 # CSV file every 15 minutes, starting at 12:15 AM.
 def main():
-    #flightDepartureScraper()
-    #createCSV('practice2.csv')
     updateExistingCSV('practice2.csv')
+        # Uncomment the functions you want to run
+        # createYesterdayCSV()
+        # flightDepartureScraper()
+        #createCSV('practice2.csv')
+        #updateExistingCSV('practice2.csv')
+
 
 main()

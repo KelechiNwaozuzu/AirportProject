@@ -1,5 +1,15 @@
 from datetime import date
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time 
 import requests
+import pandas as pd
+import time
+import datetime
+
 
 
 
@@ -15,6 +25,8 @@ def flightDepartureScraper():
     driver = webdriver.Chrome(options=options)
     driver.get("https://www.flightstats.com/v2/flight-tracker/departures/ATL")
     departureData = []
+
+
 
     def cookieAccepter():
         accept = driver.find_element(by=By.ID, value="onetrust-close-btn-container")
@@ -129,7 +141,7 @@ def flightDepartureScraper():
 
     time.sleep(2)
     driver.quit()
-    return 
+    return
 
 # This method scrapes the live wait times at the current time (time of row entry).
 def getCurrentWaitTimes():
@@ -137,15 +149,145 @@ def getCurrentWaitTimes():
 
 # This method gets the live weather at the current time (e.g., precipitation, temperature, etc.).
 def getCurrentWeather():
-    return
+    weatherCode = {
+      "0": "Unknown",
+      "1000": "Clear, Sunny",
+      "1100": "Mostly Clear",
+      "1101": "Partly Cloudy",
+      "1102": "Mostly Cloudy",
+      "1001": "Cloudy",
+      "1103": "Partly Cloudy and Mostly Clear",
+      "2100": "Light Fog",
+      "2101": "Mostly Clear and Light Fog",
+      "2102": "Partly Cloudy and Light Fog",
+      "2103": "Mostly Cloudy and Light Fog",
+      "2106": "Mostly Clear and Fog",
+      "2107": "Partly Cloudy and Fog",
+      "2108": "Mostly Cloudy and Fog",
+      "2000": "Fog",
+      "4204": "Partly Cloudy and Drizzle",
+      "4203": "Mostly Clear and Drizzle",
+      "4205": "Mostly Cloudy and Drizzle",
+      "4000": "Drizzle",
+      "4200": "Light Rain",
+      "4213": "Mostly Clear and Light Rain",
+      "4214": "Partly Cloudy and Light Rain",
+      "4215": "Mostly Cloudy and Light Rain",
+      "4209": "Mostly Clear and Rain",
+      "4208": "Partly Cloudy and Rain",
+      "4210": "Mostly Cloudy and Rain",
+      "4001": "Rain",
+      "4211": "Mostly Clear and Heavy Rain",
+      "4202": "Partly Cloudy and Heavy Rain",
+      "4212": "Mostly Cloudy and Heavy Rain",
+      "4201": "Heavy Rain",
+      "5115": "Mostly Clear and Flurries",
+      "5116": "Partly Cloudy and Flurries",
+      "5117": "Mostly Cloudy and Flurries",
+      "5001": "Flurries",
+      "5100": "Light Snow",
+      "5102": "Mostly Clear and Light Snow",
+      "5103": "Partly Cloudy and Light Snow",
+      "5104": "Mostly Cloudy and Light Snow",
+      "5122": "Drizzle and Light Snow",
+      "5105": "Mostly Clear and Snow",
+      "5106": "Partly Cloudy and Snow",
+      "5107": "Mostly Cloudy and Snow",
+      "5000": "Snow",
+      "5101": "Heavy Snow",
+      "5119": "Mostly Clear and Heavy Snow",
+      "5120": "Partly Cloudy and Heavy Snow",
+      "5121": "Mostly Cloudy and Heavy Snow",
+      "5110": "Drizzle and Snow",
+      "5108": "Rain and Snow",
+      "5114": "Snow and Freezing Rain",
+      "5112": "Snow and Ice Pellets",
+      "6000": "Freezing Drizzle",
+      "6003": "Mostly Clear and Freezing drizzle",
+      "6002": "Partly Cloudy and Freezing drizzle",
+      "6004": "Mostly Cloudy and Freezing drizzle",
+      "6204": "Drizzle and Freezing Drizzle",
+      "6206": "Light Rain and Freezing Drizzle",
+      "6205": "Mostly Clear and Light Freezing Rain",
+      "6203": "Partly Cloudy and Light Freezing Rain",
+      "6209": "Mostly Cloudy and Light Freezing Rain",
+      "6200": "Light Freezing Rain",
+      "6213": "Mostly Clear and Freezing Rain",
+      "6214": "Partly Cloudy and Freezing Rain",
+      "6215": "Mostly Cloudy and Freezing Rain",
+      "6001": "Freezing Rain",
+      "6212": "Drizzle and Freezing Rain",
+      "6220": "Light Rain and Freezing Rain",
+      "6222": "Rain and Freezing Rain",
+      "6207": "Mostly Clear and Heavy Freezing Rain",
+      "6202": "Partly Cloudy and Heavy Freezing Rain",
+      "6208": "Mostly Cloudy and Heavy Freezing Rain",
+      "6201": "Heavy Freezing Rain",
+      "7110": "Mostly Clear and Light Ice Pellets",
+      "7111": "Partly Cloudy and Light Ice Pellets",
+      "7112": "Mostly Cloudy and Light Ice Pellets",
+      "7102": "Light Ice Pellets",
+      "7108": "Mostly Clear and Ice Pellets",
+      "7107": "Partly Cloudy and Ice Pellets",
+      "7109": "Mostly Cloudy and Ice Pellets",
+      "7000": "Ice Pellets",
+      "7105": "Drizzle and Ice Pellets",
+      "7106": "Freezing Rain and Ice Pellets",
+      "7115": "Light Rain and Ice Pellets",
+      "7117": "Rain and Ice Pellets",
+      "7103": "Freezing Rain and Heavy Ice Pellets",
+      "7113": "Mostly Clear and Heavy Ice Pellets",
+      "7114": "Partly Cloudy and Heavy Ice Pellets",
+      "7116": "Mostly Cloudy and Heavy Ice Pellets",
+      "7101": "Heavy Ice Pellets",
+      "8001": "Mostly Clear and Thunderstorm",
+      "8003": "Partly Cloudy and Thunderstorm",
+      "8002": "Mostly Cloudy and Thunderstorm",
+      "8000": "Thunderstorm"
+    }
+    url = "https://api.tomorrow.io/v4/weather/realtime"
+
+    params = {
+        "location": "33.753746,-84.386330",  
+        "units": "imperial",
+        "apikey": "E0oe3K6YxiPv7sHqllVS5ir0bEnHWt8j"
+    }
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    weather_data = {
+        'temperature': data['data']['values']['temperature'],
+        'weathercode': data['data']['values']['weatherCode'],
+        'precProb': data['data']['values']['precipitationProbability']
+    }
+
+    return '{} | {} | {}'.format(weather_data['temperature'], weather_data['weathercode'], weather_data['precProb'])
 
 # This method gets the day of the month at the time of execution.
-def getDayOfMonth():
-    return
+def getMonth():
+    time_str = '12:00'
+    date_str = str(date.today())
+    date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    day_of_week = date_obj.isoweekday()
+    month = date_obj.month
+    time_obj = datetime.datetime.strptime(time_str, "%H:%M")
+    military_time = time_obj.strftime("%H%M")
+    result_tuple = (day_of_week, month, int(military_time))
+    return result_tuple[1]
+    
 
 # This method gets the day of the week at the time of execution.
 def getDayOfWeek():
-    return
+    date_str = str(date.today())
+    time_str = '12:00'
+    date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    day_of_week = date_obj.isoweekday()
+    month = date_obj.month
+    time_obj = datetime.datetime.strptime(time_str, "%H:%M")
+    military_time = time_obj.strftime("%H%M")
+    result_tuple = (day_of_week, month, int(military_time))
+    return result_tuple[0]
 
 # This method gets information on the traffic at each terminal at the time of execution.
 def getAllTerminalTraffic():
@@ -164,7 +306,7 @@ def holidayStatus(date):
 # @param fname: the name of the file you want to create.
 def createCSV(fname):
     file = open(fname, "w")
-    file.write("Time of Scrape, Flight Volume, Flight Zoning, Live Security Wait Time, Weather, Month, Day of Week, Airline Info, Terminal Traffic, Holiday\n")
+    file.write("Date, Time of Scrape, Flight Zoning, Live Security Wait Time, Weather, Month, Day of Week, Airline Info, Terminal Traffic, Holiday\n")
     file.close()
     print('New File has been created')
     return
@@ -173,13 +315,18 @@ def createCSV(fname):
 def updateExistingCSV(fname):
     file = open(fname, "a")
     holidayValue = holidayStatus(str(date.today()))[0]
-    file.write('{},{},{},{},{},{},{},{},{}, {}'.format("", "", "", "", "", "", "", "", "", holidayValue,))
+    current_time = datetime.datetime.now()
+    timeNow = str(current_time.strftime("%H:%M:%S"))[0:5]
+    file.write('{}, {},{},{},{},{},{},{},{},{}\n'.format(str(date.today()), timeNow, "", "", getCurrentWeather(), getMonth(), getDayOfWeek(), "", "", holidayValue,))
+    file.close()
     return
 
 
 # This method uses the time module to automatically run and add a row of data to an existing
 # CSV file every 15 minutes, starting at 12:15 AM.
 def main():
-    return
+    #flightDepartureScraper()
+    #createCSV('practice2.csv')
+    updateExistingCSV('practice2.csv')
 
 main()

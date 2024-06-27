@@ -5,67 +5,10 @@ import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 from mpl_toolkits.mplot3d import Axes3D
 
-
-
-
-
-
-#implementation and visuals for multiple regression model
-# target: variables representing how you want data to be shown
-
-
 """
-def buildData(fname, month = 6, dayOfWeek = 8):
-    file = open(fname, "r")
-    header  = file.readline()
-    header = header.split(",")
-    print(header[7])
-    dataList = file.readlines()
-    #print(dataList)
-    file.close()
-
-    data = {
-        'Hour': [],
-        '#ofZoning' : [],
-        'MainCheckpoint' : []
-    }
-
-    for line in dataList:
-        splitLine = line.strip().split(',')
-        data['Hour'].append(int(splitLine[1][0:2]))
-        data['#ofZoning'].append(int(splitLine[2]))
-        data['MainCheckpoint'].append(int(splitLine[7]))
-    #print(data)
-    df = pd.DataFrame(data)
-
-
-    return df
+Given a time, this method returns the hour that time falls on... 
+- it basically just groups the time into an hour by hour period.
 """
-
-def buildData(fname, month = 6, dayOfWeek = 8):
-    file = open(fname, "r")
-    header  = file.readline()
-    header = header.split(",")
-    print(header[3])
-    dataList = file.readlines()
-    #print(dataList)
-    file.close()
-
-    data = {
-        'MC': [],
-        'NC' : [],
-        'LNC' : []
-    }
-
-    for line in dataList:
-        splitLine = line.strip().split(',')
-        data['MC'].append(int(splitLine[3]))
-        data['NC'].append(int(splitLine[4]))
-        data['LNC'].append(int(splitLine[5]))
-    #print(data)
-    df = pd.DataFrame(data)
-    return df
-
 def categorizeTheHours(time):
     if time >= 0 and time <= 59:
         return 0
@@ -117,7 +60,16 @@ def categorizeTheHours(time):
         return 23
     
     
+"""
+This HELPER function reads data from a CSV file, processes specified columns, and returns a pandas DataFrame containing the processed data. It is designed to handle a special case for the 'Time of Scrape' variable, where the hours can be categorized.
 
+Parameters
+fname (str): The name of the CSV file to read from.
+xVar (str): The name of the first variable (column) to process.
+yVar (str): The name of the second variable (column) to process.
+zVar (str): The name of the third variable (column) to process.
+categorizeHours (bool): A flag to indicate whether to categorize the 'Time of Scrape' hours.
+"""
 def build3VarData(fname, xVar, yVar, zVar, categorizeHours):
     file = open(fname, "r")
     header  = file.readline()
@@ -157,7 +109,7 @@ def build3VarData(fname, xVar, yVar, zVar, categorizeHours):
                 data[zVar].append(int((splitLine[header.index(" " + zVar)].replace(":", ""))))
         else:
             data[zVar].append(int(splitLine[header.index(" " + zVar)]))
-    #print(data)
+    print(data)
     df = pd.DataFrame(data)
     return df
 
@@ -166,46 +118,42 @@ def build3VarData(fname, xVar, yVar, zVar, categorizeHours):
 
 
 
-def returnOLSRegression():
+
+
+
     """
-    fname = input('Insert filename of data to read: ')
-    df = buildData('testRunV4.csv')
-    sns.pairplot(df)
-    plt.show()
+    The main function is the entry point of the program, which allows the user to choose between creating a 3D visualization or performing an OLS regression analysis. The function reads user inputs, processes data from a CSV file, and either generates a 3D scatter plot or performs an OLS regression based on the user's choice.
+
+    Parameters
+    This function does not take any parameters.
+    Details
+    User Choice: Prompts the user to choose between:
+
+    1) 3DVisualization
+    2) OLS Regression
+    Variable Selection: Depending on the choice, the user is prompted to select variables for the analysis:
+
+    X Variable (Independent)
+    Y Variable (Independent)
+    Z Variable (Dependent)
+    Categorizing Hours: If the 'Time of Scrape' variable is chosen, the user can opt to categorize the hours.
+
+    Data Processing: Calls the build3VarData function to read and process data from a CSV file based on the selected variables.
+
+    3D Visualization:
+
+    Creates a 3D scatter plot using the processed data.
+    If 'Day of Week' is chosen as a variable, colors the scatter points based on the day.
+    OLS Regression:
+
+    Performs an OLS regression using the selected variables.
+    Displays the regression summary.
     """
-    df = buildData('testRunV4.csv')
-    X = df[['Hour', '#ofZoning']]
-    y = df['MainCheckpoint']
-    X = sm.add_constant(X)
-    model = sm.OLS(y, X).fit()
-    print(model.summary())
-
-def runLinearRegression():
-    df = buildData('testRunV4.csv')
-    X = df[['Hour', '#ofZoning']]
-    y = df['MainCheckpoint']
-    reg = LinearRegression().fit(X, y)
-    print("Intercept:", reg.intercept_)
-    print("Coefficients:", reg.coef_)
-
-
-
-
-def run3DVisualization(df):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(df['MC'], df['NC'], df['LNC'], color='blue', label='Actual Wait Time')
-
-    ax.set_xlabel('Main CheckP')
-    ax.set_ylabel('North CheckP')
-    ax.set_zlabel('Lower North CheckP')
-    ax.legend()
-    plt.show()
 
 
 def main():
     categorizeHours = False
-    choiceModel = int(input('\n1) 3DVisualization\n2) OLS Regression\n3) Linear Regression\nSelect a Model/Visualization to run data on: '))
+    choiceModel = int(input('\n1) 3DVisualization\n2) OLS Regression\n'))
     resultMeaning = {
             1: 'Time of Scrape',
             2: 'Flight Zoning',
@@ -221,6 +169,15 @@ def main():
             'N': False
         }
     if choiceModel == 1:
+        colors = {
+        1: 'blue',
+        2: 'red',
+        3: 'green',
+        4: 'orange',
+        5: 'purple',
+        6: 'brown',
+        7: 'pink'
+        }   
         xVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect an X variable: (INDEPENDENT): '))]
         yVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect a Y variable: (INDEPENDENT): '))]
         zVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect a Z variable (DEPENDENT): '))]
@@ -232,7 +189,11 @@ def main():
         df = build3VarData('testRunV4.csv', xVar, yVar, zVar, categorizeHours)
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(df[xVar], df[yVar], df[zVar], color='blue', label='Actual Wait Time')
+        if xVar == 'Day of Week' or yVar == 'Day of Week' or zVar == 'Day of Week':
+            ax.scatter(df[xVar], df[yVar], df[zVar], color=df['Day of Week'].map(colors), label='Actual Wait Time')
+        else:
+            ax.scatter(df[xVar], df[yVar], df[zVar], color="Blue", label='Actual Wait Time')
+
 
         ax.set_xlabel(xVar)
         ax.set_ylabel(yVar)
@@ -253,24 +214,6 @@ def main():
         X = sm.add_constant(X)
         model = sm.OLS(y, X).fit()
         print(model.summary())    
-
-    if choiceModel == 3:
-        xVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect an X variable: (INDEPENDENT): '))]
-        yVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect a Y variable: (INDEPENDENT): '))]
-        zVar = resultMeaning[int(input('\n1) Time of Scrape\n2) Flight Zoning\n3) Main Checkpoint\n4) North Checkpoint\n5) Lower North Checkpoint\n6) South Priorty Checkpoint\n7) International Checkpoint\n8) Month\n9) Day of Week\n10) Holiday\nSelect a Z variable (DEPENDENT): '))]
-        print(xVar)
-        if xVar == 'Time of Scrape' or yVar == 'Time of Scrape' or zVar == 'Time of Scrape':
-            categorizeHours = input("For the variable associated with 'Time of Scrape' would you like to categorize by hour? (Y/N): ").strip()
-            categorizeHours = resultMeaning[categorizeHours]
-
-        df = build3VarData('testRunv4.csv', xVar, yVar, zVar, categorizeHours)
-        X = df[['Hour', '#ofZoning']]
-        y = df['MainCheckpoint']
-        X = sm.add_constant(X)
-            
-        model = sm.OLS(y, X).fit()
-        print(model.summary())
-        
         
 
 main()

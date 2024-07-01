@@ -15,11 +15,28 @@ def fileRead(fname):
 def dataRemake(dataList):
     dataListv2 = []
     for data in dataList:
-        time = data[1].replace(":", "")
-        temp = data[8].split(" | ")[0]
-        poP = data[8].split(" | ")[2]
-        processed_data = [float(time), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]), float(data[7]), float(temp), float(poP), float(data[9]), float(data[10]), float(data[11])]
-        dataListv2.append(processed_data)
+        try:
+            time = data[1].replace(":", "")
+            temp = data[8].split(" | ")[0]
+            poP = data[8].split(" | ")[2]
+            processed_data = [
+                float(time) if time else 0.0,
+                float(data[2]) if data[2] else 0.0,
+                float(data[3]) if data[3] else 0.0,
+                float(data[4]) if data[4] else 0.0,
+                float(data[5]) if data[5] else 0.0,
+                float(data[6]) if data[6] else 0.0,
+                float(data[7]) if data[7] else 0.0,
+                float(temp) if temp else 0.0,
+                float(poP) if poP else 0.0,
+                float(data[9]) if data[9] else 0.0,
+                float(data[10]) if data[10] else 0.0,
+                float(data[11]) if data[11] else 0.0,
+            ]
+            dataListv2.append(processed_data)
+        except ValueError as e:
+            print(f"Error processing data: {data}. Error: {e}")
+            continue  
     return dataListv2
 
 #This value gets the maximum of each variable (last 3 is month, day of week, and holiday status!)
@@ -71,7 +88,7 @@ def normalizer(maxValues, dataListv2):
     for data in dataListv2:
         for i in range(12):
             data[i] = round(data[i] / maxValues[i], 4)
-    print(dataListv2[0])
+    return dataListv2
 
 
 
@@ -79,3 +96,15 @@ def normalizer(maxValues, dataListv2):
 
 
 normalizer(getMaximums(dataRemake(fileRead('testRunV4.csv'))),  dataRemake(fileRead('testRunV4.csv')))
+
+header = "Time of Scrape, Flight Zoning, MC, NC, LNC, SPOC, INTLC, Temperature, PoP, Month, Day of Week, Holiday"
+dataList = fileRead('testRunV4.csv')
+dataListv2 = dataRemake(dataList)[1::]
+maxValues = getMaximums(dataListv2)
+normalizedData = normalizer(maxValues, dataListv2)
+    
+# Write the normalized data to a new CSV file
+with open("NormalizedDataV1.csv", "w") as file:
+    file.write(header + "\n")  # Write the header
+    for data in normalizedData:
+        file.write(",".join(map(str, data)) + "\n")

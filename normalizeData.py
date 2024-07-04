@@ -85,6 +85,7 @@ def getMaximums(dataList):
 
 #divides the column by the max and changes the value!
 def normalizer(maxValues, dataListv2):
+    maxValues = [100,1,1,1,1,1,1,1,1,1,1,1]
     for data in dataListv2:
         for i in range(12):
             data[i] = round(data[i] / maxValues[i], 4)

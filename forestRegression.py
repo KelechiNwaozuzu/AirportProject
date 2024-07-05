@@ -17,7 +17,7 @@ data = pd.read_csv("NormalizedDataV1.csv")
 # Drop specific columns and split the data into features (x) and target variable (y)
 columnsToDrop = [' MC', ' NC', ' LNC', ' SPOC', ' INTLC']
 x = data.drop(columns = columnsToDrop)
-#Iloc esseintially makes the data indexable
+#Iloc essentially makes the data indexable
 y = data.iloc[:, 2]
 """"------------------------------------------------------"""
 

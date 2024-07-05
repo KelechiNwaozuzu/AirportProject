@@ -3,9 +3,9 @@ name: Update CSV
 on:
   push:
     branches:
-      - main  # Replace with your branch name if different
+      - main  # Replace with another branch name if different
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight, adjust the schedule as needed
+    - cron: '0 0 * * *'  # Runs daily at midnight, we can adjust the schedule as needed
 
 jobs:
   update_csv:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Replace with the required Python version
+          python-version: '3.9'  # Can replace with desired Python version
 
       - name: Install dependencies
         run: |
@@ -27,7 +27,7 @@ jobs:
 
       - name: Update CSV
         run: |
-          python update_csv.py  # Your script to update the CSV
+          python update_csv.py  # Our script to update the CSV
 
       - name: Commit and push changes
         run: |

@@ -33,6 +33,6 @@ def addRowToDict(row):
     date_dict[key] = result_tuple
 
 df.apply(addRowToDict, axis=1)
-print(date_dict) # prints numerical day of week, numerical month, time (in orde
+print(date_dict) # prints numerical day of week, numerical month, time (in order)
 output_csv_file_path = '/content/drive/MyDrive/AirportProject/UpdatedData.csv'
 df.to_csv(output_csv_file_path, index=False)

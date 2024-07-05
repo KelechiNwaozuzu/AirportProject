@@ -1,0 +1,40 @@
+name: Update CSV
+
+on:
+  push:
+    branches:
+      - main  # Replace with your branch name if different
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight, adjust the schedule as needed
+
+jobs:
+  update_csv:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Replace with the required Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas  # We can add other dependencies as needed
+
+      - name: Update CSV
+        run: |
+          python update_csv.py  # Your script to update the CSV
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Automated update of CSV file"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

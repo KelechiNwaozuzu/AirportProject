@@ -20,7 +20,7 @@ Our code currently performs the following steps:
 
 **Historical Data:** Aggregating historical data on flight departures, delays, and security wait times to identify patterns and trends.
 
-**Holidays**: Collecting data for integrating and anylizing important U.S holidays in data collection.
+**Holidays**: Collecting data for integrating and analyzing important U.S holidays in data collection.
 
 ## Collaborator Information: 
 

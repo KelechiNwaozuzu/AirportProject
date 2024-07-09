@@ -8,7 +8,20 @@ import matplotlib.pyplot as plt
 import joblib
 
 
-
+def create_segmented_array(total_length, segment_values):
+    num_segments = len(segment_values)
+    segment_length = total_length // num_segments
+    
+    array_segments = []
+    for i in range(num_segments - 1):
+        array_segments.append(np.full(segment_length, segment_values[i], dtype=float))
+    
+    last_segment_length = total_length - segment_length * (num_segments - 1)
+    array_segments.append(np.full(last_segment_length, segment_values[-1], dtype=float))
+    
+    final_array = np.concatenate(array_segments)
+    
+    return final_array
 
 # Load data from CSV file
 data = pd.read_csv("NormalizedDataV1.csv")
@@ -35,8 +48,19 @@ rfr = RandomForestRegressor(random_state = 69)
 # Split the data into training and testing sets
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2,random_state = 69)
 
+weights_array = np.array([1,2,3,4])
+weights_array = weights_array / np.sum(weights_array)
+sample = np.array([float(x) for x in weights_array])
+print(x_train)
+print(y_train)
+
+
+sample_weights = create_segmented_array(len(x_train), sample)
+print(sample)
+print(sample_weights[4616])
+
 # Train the model on the training data
-rfr.fit(x_train, y_train)
+rfr.fit(x_train, y_train, sample_weights)
 
 # Make predictions on the test data
 prediction = rfr.predict(x_test)
@@ -102,6 +126,8 @@ plt.legend()
 plt.grid(True)
 # Show plot
 plt.show()
+
+
 
 
 

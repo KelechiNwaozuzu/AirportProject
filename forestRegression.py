@@ -69,9 +69,9 @@ prediction = rfr.predict(x_test)
 joblib.dump (rfr, 'forestRegressor_model.pkl')
 
 # Evaluate the model using various metrics and print the results
-print(mean_squared_error(y_test, prediction))
-print(mean_absolute_error(y_test, prediction))
-print(r2_score(y_test, prediction))
+print("Mean squared error: " + mean_squared_error(y_test, prediction))
+print("Mean absolute error: " + mean_absolute_error(y_test, prediction))
+print("R^2 score: " + r2_score(y_test, prediction))
 
 
 # Print predictions and ground truth values for comparison

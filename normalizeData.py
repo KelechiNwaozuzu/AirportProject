@@ -99,7 +99,7 @@ def normalizer(maxValues, dataListv2):
 normalizer(getMaximums(dataRemake(fileRead('testRunV4.csv'))),  dataRemake(fileRead('testRunV4.csv')))
 
 header = "Time of Scrape, Flight Zoning, MC, NC, LNC, SPOC, INTLC, Temperature, PoP, Month, Day of Week, Holiday"
-dataList = fileRead('testRunV4.csv')
+dataList = fileRead('cleaned_output_file.csv')
 dataListv2 = dataRemake(dataList)[1::]
 maxValues = getMaximums(dataListv2)
 normalizedData = normalizer(maxValues, dataListv2)

@@ -12,5 +12,5 @@ def remove_zero_flight_zoning(input_csv, output_csv):
 
 # Example usage
 input_csv = 'testRunV4.csv'
-output_csv = 'scrapedDataFinal11.csv'
+output_csv = 'cleaned_output_file.csv'
 remove_zero_flight_zoning(input_csv, output_csv)
